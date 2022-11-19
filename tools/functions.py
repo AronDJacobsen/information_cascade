@@ -6,7 +6,7 @@ np.random.seed(42)
 ### SIMULATION FUNCTIONS ###
 
 
-def posterior(p, q, a, b):
+def calculate_posterior(p, q, a, b):
     # calculate the posterior given...
     numerator = p * ( (q**a) * ((1-q)**b) )
     denominator = numerator + (1-p) * ( ((1-q)**a) * (q**b) )
@@ -14,46 +14,42 @@ def posterior(p, q, a, b):
     return posterior_prob
 
 
-def update_variables(results, sim, agent, posterior_prob, prior, a, b):
-    # based on posteror, calculate agents choice
+def calculate_choice(posterior_prob, prior):
+    # based on posterior and prior, calculate agents choice
+    # initialize
+    choose_a = 0
+    choose_b = 0
 
-    # if posterior is larger than the prior
-    if (posterior_prob > prior):
+    # if posterior is larger
+    if (posterior_prob > 0.5):
         # majority blue is approved
-        a += 1
-        results[sim]['a'][agent] = 1
-        results[sim]['ab'][agent] = 1
+        choose_a = 1
 
     # if they are the same
-    elif posterior_prob == prior:
+    elif posterior_prob == 0.5:
+        # if a tie, trust your own observation more
+        choose_a = 1
         # the choice is 50/50
-        choice = np.random.binomial(1, 1/2, size=None)
-
+        #choice = np.random.binomial(1, 1/2, size=None)
         # todo: or choice = marble?
+        #if choice == 1:
+        #    choose_a = 1
+        #else:
+        #    choose_b = 1
 
-        if choice == 1:
-            a += 1
-            results[sim]['a'][agent] = 1
-            results[sim]['ab'][agent] = 1
-        else:
-            b += 1
-            results[sim]['ab'][agent] = -1
-
-    # if less than prior
+    # else if less 1/2
     else:
         # majority red is approved
-        b += 1
-        results[sim]['ab'][agent] = -1
+        choose_b = 1
+
+    return choose_a, choose_b
 
 
-    return results, a, b
-
-
-def basic_simulation(n_simutations, n_agents, prior, signal_accuracy):
+def basic_simulation(n_simulations, n_agents, prior, signal_accuracy):
     # the basic simulation
 
     results = {}
-    for sim in range(n_simutations):
+    for sim in range(n_simulations):
         results[sim] = {}
         results[sim]['a'] = np.zeros(n_agents)
         results[sim]['ab'] = np.zeros(n_agents)
@@ -65,12 +61,16 @@ def basic_simulation(n_simutations, n_agents, prior, signal_accuracy):
             marble = np.random.binomial(1, signal_accuracy, size=None) # 2/3
 
             if marble == 1: # if e.g. the blue marble
-                posterior_prob = posterior(prior, signal_accuracy, a+1, b) # add to obs
+                posterior_prob = calculate_posterior(prior, signal_accuracy, a+1, b) # add to obs
             else: # if e.g. the red marble
-                posterior_prob = posterior(prior, signal_accuracy, a, b+1) # add to obs
+                posterior_prob = calculate_posterior(prior, signal_accuracy, a, b+1) # add to obs
 
-
-            results, a, b = update_variables(results, sim, agent, posterior_prob, prior, a, b)
+            # calculating agents choice based on posterior and prior
+            choose_a, choose_b = calculate_choice(posterior_prob, prior)
+            a += choose_a # 1 if chosen, 0 otherwise
+            b += choose_b # 1 if chosen, 0 otherwise
+            results[sim]['a'][agent] = choose_a
+            results[sim]['ab'][agent] = choose_a -choose_b # this fluctuates, thus b is -1 if chosen
 
 
         results[sim]['a_cumsum'] = np.cumsum(results[sim]['a'])
