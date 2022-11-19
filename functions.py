@@ -24,6 +24,7 @@ def run_simulation(n_simutations, n_agents, prior, signal_accuracy):
         b = 0
         for agent in range(n_agents):
 
+            # draw a
             marble = np.random.binomial(1, signal_accuracy, size=None) # 2/3
 
             if marble == 1: # if e.g. the blue marble
