@@ -9,7 +9,7 @@ n_agents = 100
 
 prior = 1/2
 
-signal_accuracy = 2/3
+signal_accuracy = 1/2
 
 
 results = run_simulation(n_simutations, n_agents, prior, signal_accuracy)
