@@ -8,13 +8,14 @@ np.random.seed(42)
 
 def calculate_posterior(p, q, a, b):
     # calculate the posterior given...
+    # probability of accepting given a #high and #low signals + yours
     numerator = p * ( (q**a) * ((1-q)**b) )
     denominator = numerator + (1-p) * ( ((1-q)**a) * (q**b) )
     posterior_prob = numerator / denominator
     return posterior_prob
 
 
-def calculate_choice(posterior_prob, prior):
+def calculate_choice(posterior_prob):
     # based on posterior and prior, calculate agents choice
     # initialize
     choose_a = 0
@@ -66,7 +67,7 @@ def basic_simulation(n_simulations, n_agents, prior, signal_accuracy):
                 posterior_prob = calculate_posterior(prior, signal_accuracy, a, b+1) # add to obs
 
             # calculating agents choice based on posterior and prior
-            choose_a, choose_b = calculate_choice(posterior_prob, prior)
+            choose_a, choose_b = calculate_choice(posterior_prob)
             a += choose_a # 1 if chosen, 0 otherwise
             b += choose_b # 1 if chosen, 0 otherwise
             results[sim]['a'][agent] = choose_a
