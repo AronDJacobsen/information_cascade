@@ -1,7 +1,6 @@
 
 import numpy as np
 # setting random seed
-np.random.seed(42)
 
 ### SIMULATION FUNCTIONS ###
 
@@ -15,7 +14,7 @@ def calculate_posterior(p, q, a, b):
     return posterior_prob
 
 
-def calculate_choice(posterior_prob):
+def calculate_choice(posterior_prob, marble):
     # based on posterior and prior, calculate agents choice
     # initialize
     choose_a = 0
@@ -29,7 +28,8 @@ def calculate_choice(posterior_prob):
     # if they are the same
     elif posterior_prob == 0.5:
         # if a tie, trust your own observation more
-        choose_a = 1
+        choose_a = marble
+        choose_b = 1-marble
         # the choice is 50/50
         #choice = np.random.binomial(1, 1/2, size=None)
         # todo: or choice = marble?
@@ -67,7 +67,7 @@ def basic_simulation(n_simulations, n_agents, prior, signal_accuracy):
                 posterior_prob = calculate_posterior(prior, signal_accuracy, a, b+1) # add to obs
             
             # calculating agents choice based on posterior and prior
-            choose_a, choose_b = calculate_choice(posterior_prob)
+            choose_a, choose_b = calculate_choice(posterior_prob, marble)
             a += choose_a # 1 if chosen, 0 otherwise
             b += choose_b # 1 if chosen, 0 otherwise
             results[sim]['a'][agent] = choose_a
@@ -99,25 +99,20 @@ def independent_simulation(n_simulations, n_agents, n_independent, prior, signal
             if(agent < n_independent):
                 if(marble == 1): #if blue
                     choose_a, choose_b = 1, 0
-                    a += choose_a
                 else: #if red
                     choose_a, choose_b = 0, 1
-                    b += choose_b
-                results[sim]['a'][agent] = choose_a
-                results[sim]['ab'][agent] = choose_a -choose_b # this fluctuates, thus b is -1 if chosen    
             else:
                 if marble == 1: # if e.g. the blue marble
                     posterior_prob = calculate_posterior(prior, signal_accuracy, a+1, b) # add to obs
                 else: # if e.g. the red marble
                     posterior_prob = calculate_posterior(prior, signal_accuracy, a, b+1) # add to obs
-                
-                
                 # calculating agents choice based on posterior and prior
-                choose_a, choose_b = calculate_choice(posterior_prob)
-                a += choose_a # 1 if chosen, 0 otherwise
-                b += choose_b # 1 if chosen, 0 otherwise
-                results[sim]['a'][agent] = choose_a
-                results[sim]['ab'][agent] = choose_a -choose_b # this fluctuates, thus b is -1 if chosen
+                choose_a, choose_b = calculate_choice(posterior_prob, marble)
+            # saving choices
+            a += choose_a # 1 if chosen, 0 otherwise
+            b += choose_b # 1 if chosen, 0 otherwise
+            results[sim]['a'][agent] = choose_a
+            results[sim]['ab'][agent] = choose_a -choose_b # this fluctuates, thus b is -1 if chosen
 
 
         results[sim]['a_cumsum'] = np.cumsum(results[sim]['a'])

@@ -2,15 +2,21 @@
 from  tools import *
 
 
-iterations = 15
-# taken from:
+iterations = 16
+
+save = True
+name = 'prior_exp'
+
+# % on words taken from:
 # https://web.stanford.edu/~clark/1990s/Mosteller,%20F.%20_%20Youtz,%20C.%20_Quantifying%20probabilistic%20expressions_%201990.pdf
 
+# todo add not likely etc.
 priors = {'Always: 99%': 99/100,
           'Certain: 97%': 97/100,
           'Likely/Probable/Often: 69%': 69/100,
           'Frequent: 61%': 61/100,
-          'Even chance: 50%': 50/100
+          'Even chance: 50%': 50/100,
+          'Possible: 41%': 41/100
           }
 
 results = {}
@@ -37,7 +43,7 @@ for idx, prior in enumerate(list(priors.keys())):
 # fluctuation plot:
 
 
-fluctuation_plot(results)
+fluctuation_plot(results, save, name)
 
 
 
