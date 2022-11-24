@@ -46,6 +46,17 @@ def calculate_choice(posterior_prob, marble):
     return choose_a, choose_b
 
 
+def calculate_ratio(results):
+    num_blue = 0
+    total = len(results.keys()) # num simulations
+    for sim in list(results.keys()):
+        last_choice = results[sim]['ab'][-1]
+        if last_choice == 1: # blue
+            num_blue += 1
+    return num_blue/total
+
+
+
 def basic_simulation(n_simulations, n_agents, prior, signal_accuracy):
     # the basic simulation
 
@@ -76,6 +87,9 @@ def basic_simulation(n_simulations, n_agents, prior, signal_accuracy):
 
         results[sim]['a_cumsum'] = np.cumsum(results[sim]['a'])
         results[sim]['ab_cumsum'] = np.cumsum(results[sim]['ab'])
+
+    ratio = calculate_ratio(results)
+    results['ratio'] = ratio
 
     return results
 
@@ -117,5 +131,9 @@ def independent_simulation(n_simulations, n_agents, n_independent, prior, signal
 
         results[sim]['a_cumsum'] = np.cumsum(results[sim]['a'])
         results[sim]['ab_cumsum'] = np.cumsum(results[sim]['ab'])
+
+
+    ratio = calculate_ratio(results)
+    results['ratio'] = ratio
 
     return results

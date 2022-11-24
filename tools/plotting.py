@@ -57,8 +57,8 @@ def create_double_plot(results, n_simutations, n_agents, signal_accuracy, save, 
     plt.style.use('seaborn-colorblind') # colors
 
     # info about data stored
-    plot_types = {'ab_cumsum': {'t': 'Cumulative approves - rejects', 'y': '#approve - #rejects'},
-                  'ab': {'t': 'Approve/reject fluctuations', 'y': 'approve or reject'}}
+    plot_types = {'ab_cumsum': {'t': 'Cumulative of approve vs. reject', 'y': '#approves - #rejects'},
+                  'ab': {'t': 'Approve vs. reject fluctuations', 'y': 'approve or reject'}}
 
     n_subplots = len(plot_types.keys())
     fig, ax = plt.subplots(nrows=1, ncols=n_subplots, figsize=(9, 3))
@@ -82,6 +82,8 @@ def create_double_plot(results, n_simutations, n_agents, signal_accuracy, save, 
             offset = np.linspace(-3/4, 3/4, n_simutations)
             for sim in range(n_simutations):
                 ax[idx].plot(results[sim][plot_type] + offset[sim], linewidth=.3)
+            # if independent experiment
+            ax[idx].axhline(y=0, color='grey', linestyle='--')#, linewidth=.3)
         elif plot_type == 'ab':
             # creating offset for lines to make them more visible
             offset = np.linspace(-0.15, 0.15, n_simutations)
@@ -89,11 +91,10 @@ def create_double_plot(results, n_simutations, n_agents, signal_accuracy, save, 
                 ax[idx].plot(results[sim][plot_type] + offset[sim], linewidth=.3)
             ax[idx].set_yticks([-1, 1])
             ax[idx].set_yticklabels(['reject', 'approve'])
-
         ax[idx].set_ylabel(plot_types[plot_type]['y'])
         ax[idx].set_xlabel('# agent in sequence')
 
-    fig.suptitle(f"q: {signal_accuracy}  | #Simulations: {n_simutations}")
+    #fig.suptitle(f"q: {signal_accuracy}  | #Simulations: {n_simutations}")
     fig.tight_layout()
     if save:
         plt.savefig(f'results/{name}.png', dpi=200)
