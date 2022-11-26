@@ -4,7 +4,7 @@ from  tools import *
 
 iterations = 16
 
-save = True
+save = False
 name = 'prior_exp'
 
 # % on words taken from:
@@ -33,7 +33,7 @@ for idx, prior in enumerate(list(priors.keys())):
         # calculating probability of accepting given:
         #    - you private high signal, but #b low signals
         posterior_prob = calculate_posterior(p, q, a, b)
-        choose_a, choose_b = calculate_choice(posterior_prob)
+        choose_a, choose_b = calculate_choice(posterior_prob, a)
         # agent still approves that majority is blue
         if choose_a:
             results[prior].append(1)
